@@ -5,12 +5,15 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.routers.auth import router as auth_router
 
 app = FastAPI(
     title="HireFlow API",
     description="A recruitment management API",
     version="0.1.0",
 )
+
+app.include_router(auth_router)
 
 
 @app.get("/")
