@@ -2,8 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-
-from app.core.dependencies import get_current_user
+from app.core.dependencies import get_current_user, require_role
 from app.core.jwt import create_access_token
 from app.core.security import hash_password, verify_password
 from app.database import get_db
@@ -107,3 +106,13 @@ def read_current_user(
     current_user: User = Depends(get_current_user),
 ):
     return current_user
+
+@router.get("/recruiter-area")
+def recruiter_area(
+    current_user: User = Depends(require_role("recruiter")),
+):
+    return {
+        "message": "Welcome to the recruiter area",
+        "user_id": current_user.id,
+        "role": current_user.role,
+    }

@@ -1,3 +1,3 @@
-SELECT email, hashed_password
-FROM users
+UPDATE users
+SET role = 'recruiter'
 WHERE email = 'candidate1@example.com';
