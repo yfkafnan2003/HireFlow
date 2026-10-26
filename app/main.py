@@ -1,11 +1,10 @@
-
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-
 from app.database import get_db
 from app.routers.auth import router as auth_router
+from app.routers.jobs import router as jobs_router
 
 app = FastAPI(
     title="HireFlow API",
@@ -14,7 +13,7 @@ app = FastAPI(
 )
 
 app.include_router(auth_router)
-
+app.include_router(jobs_router)
 
 @app.get("/")
 def home():

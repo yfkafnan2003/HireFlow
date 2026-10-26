@@ -1,3 +1,2 @@
-UPDATE users
-SET role = 'recruiter'
-WHERE email = 'candidate1@example.com';
+SELECT id, title, recruiter_id
+FROM jobs;
