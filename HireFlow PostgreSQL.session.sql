@@ -1,2 +1,2 @@
-SELECT id, title, recruiter_id
-FROM jobs;
+SELECT id, email, role
+FROM users;

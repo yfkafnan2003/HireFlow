@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.routers.auth import router as auth_router
 from app.routers.jobs import router as jobs_router
-
+from app.routers.applications import router as applications_router
 app = FastAPI(
     title="HireFlow API",
     description="A recruitment management API",
@@ -14,7 +14,7 @@ app = FastAPI(
 
 app.include_router(auth_router)
 app.include_router(jobs_router)
-
+app.include_router(applications_router)
 @app.get("/")
 def home():
     return {
