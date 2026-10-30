@@ -1,10 +1,20 @@
 from datetime import datetime
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ApplicationCreate(BaseModel):
-    job_id: int
+    job_id: int = Field(gt=0)
+
+
+class ApplicationStatusUpdate(BaseModel):
+    status: Literal[
+        "reviewing",
+        "shortlisted",
+        "rejected",
+        "hired",
+    ]
 
 
 class ApplicationResponse(BaseModel):

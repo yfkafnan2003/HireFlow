@@ -1,2 +1,3 @@
-SELECT id, email, role
-FROM users;
+UPDATE jobs
+SET recruiter_id = 2
+WHERE id = 1;
