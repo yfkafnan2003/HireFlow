@@ -1,3 +1,3 @@
-UPDATE jobs
-SET recruiter_id = 2
-WHERE id = 1;
+UPDATE users
+SET role = 'interviewer'
+WHERE email = 'interviewer@example.com';

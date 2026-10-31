@@ -6,7 +6,7 @@ from app.database import get_db
 from app.models import Job, User
 from app.schemas.job import JobCreate, JobResponse, JobUpdate
 from fastapi import HTTPException
-
+from app.core.audit import record_audit
 router = APIRouter(
     prefix="/jobs",
     tags=["Jobs"],
@@ -31,6 +31,16 @@ def create_job(
     )
 
     db.add(job)
+    db.flush()
+
+    record_audit(
+        db,
+        actor_id=current_user.id,
+        action="job.created",
+        target_type="job",
+        target_id=job.id,
+    )
+
     db.commit()
     db.refresh(job)
 
@@ -103,7 +113,13 @@ def update_job(
             status_code=400,
             detail="No fields provided to update",
         )
-
+    record_audit(
+        db,
+        actor_id=current_user.id,
+        action="job.updated",
+        target_type="job",
+        target_id=job.id,
+    )
     db.commit()
     db.refresh(job)
 

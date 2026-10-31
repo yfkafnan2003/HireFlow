@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-
+from app.core.audit import record_audit
 from app.core.dependencies import require_role
 from app.database import get_db
 from app.models import Application, Candidate, Job, User
@@ -71,8 +71,19 @@ def apply_for_job(
     db.add(application)
 
     try:
+        db.flush()
+
+        record_audit(
+            db,
+            actor_id=current_user.id,
+            action="application.submitted",
+            target_type="application",
+            target_id=application.id,
+        )
+
         db.commit()
         db.refresh(application)
+
     except IntegrityError:
         db.rollback()
         raise HTTPException(
@@ -168,7 +179,13 @@ def update_application_status(
         )
 
     application.status = data.status
-
+    record_audit(
+    db,
+    actor_id=current_user.id,
+    action="application.status_updated",
+    target_type="application",
+    target_id=application.id,
+    )
     try:
         db.commit()
         db.refresh(application)
