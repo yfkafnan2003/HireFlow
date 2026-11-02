@@ -1,12 +1,20 @@
-from fastapi import APIRouter, Depends, status
+
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Query,
+    status,
+)
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+
+from app.core.audit import record_audit
 from app.core.dependencies import require_role
 from app.database import get_db
 from app.models import Job, User
 from app.schemas.job import JobCreate, JobResponse, JobUpdate
-from fastapi import HTTPException
-from app.core.audit import record_audit
+
 router = APIRouter(
     prefix="/jobs",
     tags=["Jobs"],
@@ -46,19 +54,43 @@ def create_job(
 
     return job
 
+
 @router.get("", response_model=list[JobResponse])
 def list_jobs(
+    search: str | None = Query(
+        default=None,
+        min_length=1,
+        max_length=100,
+    ),
+    location: str | None = Query(
+        default=None,
+        min_length=1,
+        max_length=100,
+    ),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=10, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
+    statement = select(Job).where(Job.status == "open")
+
+    if search:
+        statement = statement.where(
+            Job.title.ilike(f"%{search.strip()}%")
+        )
+
+    if location:
+        statement = statement.where(
+            Job.location.ilike(f"%{location.strip()}%")
+        )
+
     statement = (
-        select(Job)
-        .where(Job.status == "open")
-        .order_by(Job.created_at.desc())
+        statement
+        .order_by(Job.created_at.desc(), Job.id.desc())
+        .offset((page - 1) * page_size)
+        .limit(page_size)
     )
 
-    jobs = db.scalars(statement).all()
-
-    return jobs
+    return db.scalars(statement).all()
 
 
 @router.get("/{job_id}", response_model=JobResponse)
@@ -105,14 +137,15 @@ def update_job(
 
     update_data = job_data.model_dump(exclude_unset=True)
 
-    for field, value in update_data.items():
-        setattr(job, field, value)
-
     if not update_data:
         raise HTTPException(
             status_code=400,
             detail="No fields provided to update",
         )
+
+    for field, value in update_data.items():
+        setattr(job, field, value)
+
     record_audit(
         db,
         actor_id=current_user.id,
@@ -120,6 +153,7 @@ def update_job(
         target_type="job",
         target_id=job.id,
     )
+
     db.commit()
     db.refresh(job)
 

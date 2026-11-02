@@ -1,3 +1,1 @@
-UPDATE users
-SET role = 'interviewer'
-WHERE email = 'interviewer@example.com';
+CREATE DATABASE hireflow_test;
