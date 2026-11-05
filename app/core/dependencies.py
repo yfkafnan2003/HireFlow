@@ -1,16 +1,18 @@
+
 import jwt
+from collections.abc import Callable
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt.exceptions import InvalidTokenError
 from sqlalchemy.orm import Session
 
-from collections.abc import Callable
-
 from app.core.jwt import JWT_ALGORITHM, JWT_SECRET_KEY
 from app.database import get_db
 from app.models import User
 
-bearer_scheme = HTTPBearer()
+
+bearer_scheme = HTTPBearer(auto_error=False)
 
 credentials_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -20,18 +22,20 @@ credentials_exception = HTTPException(
 
 
 def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(
+    credentials: HTTPAuthorizationCredentials | None = Depends(
         bearer_scheme
     ),
     db: Session = Depends(get_db),
 ) -> User:
-    token = credentials.credentials
+    if credentials is None:
+        raise credentials_exception
 
     try:
         payload = jwt.decode(
-            token,
+            credentials.credentials,
             JWT_SECRET_KEY,
             algorithms=[JWT_ALGORITHM],
+            options={"require": ["sub", "exp", "iat"]},
         )
 
         subject = payload.get("sub")
@@ -53,6 +57,7 @@ def get_current_user(
         raise credentials_exception
 
     return user
+
 
 def require_role(*allowed_roles: str) -> Callable:
     def role_checker(

@@ -1,10 +1,18 @@
+
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import require_role
 from app.database import get_db
-from app.models import Application, AuditLog, Interview, Job, User
+from app.models import (
+    Application,
+    AuditLog,
+    Candidate,
+    Interview,
+    Job,
+    User,
+)
 
 router = APIRouter(prefix="/audit-logs", tags=["Audit Logs"])
 
@@ -26,6 +34,12 @@ def my_audit_logs(
         Interview.application_id.in_(recruiter_applications)
     )
 
+    recruiter_candidates = (
+        select(Candidate.id)
+        .join(Application, Application.candidate_id == Candidate.id)
+        .where(Application.id.in_(recruiter_applications))
+    )
+
     statement = (
         select(AuditLog)
         .where(
@@ -40,6 +54,14 @@ def my_audit_logs(
             | (
                 (AuditLog.target_type == "interview")
                 & AuditLog.target_id.in_(recruiter_interviews)
+            )
+            | (
+                (AuditLog.target_type == "candidate")
+                & AuditLog.target_id.in_(recruiter_candidates)
+            )
+            | (
+                (AuditLog.target_type == "user")
+                & (AuditLog.target_id == current_user.id)
             )
         )
         .order_by(AuditLog.created_at.desc(), AuditLog.id.desc())

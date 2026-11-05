@@ -200,8 +200,7 @@ def update_interview(
             detail="ends_at must be after starts_at",
         )
 
-    if "starts_at" in update_data:
-        ensure_future(new_start)
+    ensure_future(new_start)
 
     for field, value in update_data.items():
         setattr(interview, field, value)

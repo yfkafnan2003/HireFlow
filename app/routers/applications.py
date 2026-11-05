@@ -180,11 +180,11 @@ def update_application_status(
 
     application.status = data.status
     record_audit(
-    db,
-    actor_id=current_user.id,
-    action="application.status_updated",
-    target_type="application",
-    target_id=application.id,
+        db,
+        actor_id=current_user.id,
+        action="application.status_updated",
+        target_type="application",
+        target_id=application.id,
     )
     try:
         db.commit()

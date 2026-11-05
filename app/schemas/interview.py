@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
@@ -12,11 +13,10 @@ class InterviewCreate(BaseModel):
 
     @model_validator(mode="after")
     def validate_schedule(self):
-        if self.starts_at.tzinfo is None or self.starts_at.utcoffset() is None:
-            raise ValueError("starts_at must include a timezone")
-
-        if self.ends_at.tzinfo is None or self.ends_at.utcoffset() is None:
-            raise ValueError("ends_at must include a timezone")
+        for field in ("starts_at", "ends_at"):
+            value = getattr(self, field)
+            if value.tzinfo is None or value.utcoffset() is None:
+                raise ValueError(f"{field} must include a timezone")
 
         if self.ends_at <= self.starts_at:
             raise ValueError("ends_at must be after starts_at")

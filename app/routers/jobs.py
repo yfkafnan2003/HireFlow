@@ -6,7 +6,7 @@ from fastapi import (
     Query,
     status,
 )
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.audit import record_audit

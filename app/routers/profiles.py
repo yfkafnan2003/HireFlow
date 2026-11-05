@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from pydantic import ValidationError
 
 from app.core.audit import record_audit
 from app.core.dependencies import require_role
@@ -18,7 +17,6 @@ from app.schemas.profile import (
 router = APIRouter(prefix="/profiles", tags=["Profiles"])
 
 
-# Candidate: view own profile
 @router.get("/candidate/me", response_model=CandidateProfileResponse)
 def get_candidate_profile(
     db: Session = Depends(get_db),
@@ -34,7 +32,6 @@ def get_candidate_profile(
     return candidate
 
 
-# Candidate: update own profile
 @router.patch("/candidate/me", response_model=CandidateProfileResponse)
 def update_candidate_profile(
     data: CandidateProfileUpdate,
@@ -53,14 +50,19 @@ def update_candidate_profile(
     if not update_data:
         raise HTTPException(400, "No fields provided to update")
 
-    if "full_name" in update_data:
-        value = update_data["full_name"]
-        if value is not None and not value.strip():
-            raise HTTPException(422, "full_name cannot be blank")
-        if value is not None:
-            update_data["full_name"] = value.strip()
-
     for field, value in update_data.items():
+        if field == "full_name" and value is None:
+            raise HTTPException(422, "full_name cannot be null")
+
+        if field == "full_name":
+            value = value.strip()
+
+        if field == "phone" and value is not None:
+            value = value.strip()
+
+        if field == "resume_url" and value is not None:
+            value = str(value)
+
         setattr(candidate, field, value)
 
     record_audit(
@@ -81,7 +83,6 @@ def update_candidate_profile(
     return candidate
 
 
-# Recruiter: view own account profile
 @router.get("/recruiter/me", response_model=RecruiterProfileResponse)
 def get_recruiter_profile(
     current_user: User = Depends(require_role("recruiter")),
@@ -89,7 +90,6 @@ def get_recruiter_profile(
     return current_user
 
 
-# Recruiter: update own account profile
 @router.patch("/recruiter/me", response_model=RecruiterProfileResponse)
 def update_recruiter_profile(
     data: RecruiterProfileUpdate,
@@ -101,20 +101,19 @@ def update_recruiter_profile(
     if not update_data:
         raise HTTPException(400, "No fields provided to update")
 
-    new_email = update_data.get("email")
+    new_email = update_data["email"]
 
-    if new_email is not None:
-        existing = db.scalar(
-            select(User).where(
-                User.email == new_email,
-                User.id != current_user.id,
-            )
+    existing = db.scalar(
+        select(User).where(
+            User.email == new_email,
+            User.id != current_user.id,
         )
+    )
 
-        if existing:
-            raise HTTPException(409, "Email is already registered")
+    if existing:
+        raise HTTPException(409, "Email is already registered")
 
-        current_user.email = new_email
+    current_user.email = new_email
 
     record_audit(
         db,
