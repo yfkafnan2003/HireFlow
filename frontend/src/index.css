@@ -1,0 +1,289 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background: #f8fafc;
+  color: #172033;
+}
+
+a {
+  text-decoration: none;
+}
+
+nav {
+  height: 80px;
+  padding: 0 9%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  border-bottom: 1px solid #e5eaf1;
+}
+
+nav h2 {
+  color: #2563eb;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+nav div {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+nav a {
+  color: #475569;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+nav a:last-child {
+  background: #2563eb;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+}
+
+.hero {
+  min-height: 520px;
+  padding: 110px 20px 90px;
+  text-align: center;
+  background: linear-gradient(135deg, #eff6ff, #ffffff);
+}
+
+.tagline {
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+
+.hero h1 {
+  font-size: clamp(36px, 5vw, 58px);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -2px;
+}
+
+.description {
+  max-width: 620px;
+  margin: 24px auto;
+  color: #64748b;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.primary-btn,
+.secondary-btn {
+  padding: 14px 25px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.primary-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.secondary-btn {
+  background: white;
+  color: #2563eb;
+  border: 1px solid #cbd5e1;
+}
+
+.features {
+  padding: 80px 9%;
+  text-align: center;
+}
+
+.features h2 {
+  font-size: 30px;
+  margin-bottom: 45px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.feature-grid article {
+  background: white;
+  padding: 32px 24px;
+  border: 1px solid #e5eaf1;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.feature-grid h3 {
+  font-size: 18px;
+  margin-bottom: 14px;
+}
+
+.feature-grid p {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+footer {
+  padding: 28px;
+  text-align: center;
+  color: #94a3b8;
+  border-top: 1px solid #e5eaf1;
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  nav {
+    padding: 0 5%;
+  }
+
+  .hero {
+    padding: 85px 20px;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .features {
+    padding: 60px 6%;
+  }
+
+  .features h2 {
+    font-size: 25px;
+  }
+}
+
+@media (max-width: 420px) {
+  nav div {
+    gap: 14px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    width: 180px;
+  }
+}
+
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 20px;
+  background: linear-gradient(135deg, #eff6ff, #f8fafc);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: white;
+  padding: 40px;
+  border: 1px solid #e5eaf1;
+  border-radius: 14px;
+  box-shadow: 0 10px 35px rgba(15, 23, 42, 0.06);
+}
+
+.brand {
+  display: inline-block;
+  color: #2563eb;
+  font-size: 25px;
+  font-weight: 800;
+  margin-bottom: 30px;
+}
+
+.auth-card h1 {
+  font-size: 27px;
+  margin-bottom: 10px;
+}
+
+.auth-card > p {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 28px;
+}
+
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-card label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.auth-card input {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  outline: none;
+}
+
+.auth-card input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.auth-card button {
+  padding: 14px;
+  border: none;
+  border-radius: 7px;
+  background: #2563eb;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-card button:hover,
+.primary-btn:hover {
+  background: #1d4ed8;
+}
+
+.auth-card .auth-footer {
+  margin-top: 25px;
+  margin-bottom: 0;
+  text-align: center;
+  font-size: 13px;
+}
+
+.auth-footer a {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 28px 22px;
+  }
+}
