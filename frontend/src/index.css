@@ -287,3 +287,390 @@ footer {
     padding: 28px 22px;
   }
 }
+
+/* Jobs Page */
+
+.jobs-page {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.jobs-header {
+  padding: 75px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #eff6ff, #ffffff);
+}
+
+.jobs-header h1 {
+  font-size: clamp(30px, 4vw, 42px);
+  margin-bottom: 15px;
+}
+
+.jobs-header p {
+  color: #64748b;
+  font-size: 15px;
+}
+
+.jobs-container {
+  padding: 50px 9%;
+}
+
+.job-search {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 14px;
+  margin-bottom: 35px;
+}
+
+.job-search input {
+  padding: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.job-search input:focus {
+  border-color: #2563eb;
+}
+
+.job-search button {
+  padding: 14px 22px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.jobs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+
+.job-card,
+.job-details-card {
+  background: white;
+  padding: 28px;
+  border: 1px solid #e5eaf1;
+  border-radius: 12px;
+}
+
+.job-status {
+  display: inline-block;
+  padding: 6px 12px;
+  background: #dcfce7;
+  color: #15803d;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.job-card h2 {
+  font-size: 21px;
+  margin: 18px 0 10px;
+}
+
+.job-location {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+
+.job-description {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.8;
+  margin-bottom: 25px;
+}
+
+.empty-jobs {
+  text-align: center;
+  color: #64748b;
+  padding: 50px 0;
+}
+
+.job-details-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 45px 20px;
+}
+
+.back-link {
+  display: inline-block;
+  color: #2563eb;
+  font-weight: 600;
+  margin-bottom: 25px;
+}
+
+.job-details-card h1 {
+  font-size: 32px;
+  margin: 20px 0 10px;
+}
+
+.job-details-card h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.job-details-divider {
+  height: 1px;
+  background: #e5eaf1;
+  margin: 25px 0;
+}
+
+.full-job-description {
+  color: #475569;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  margin-bottom: 30px;
+}
+
+.job-meta {
+  color: #94a3b8;
+  font-size: 13px;
+  margin-bottom: 25px;
+}
+
+@media (max-width: 768px) {
+  .jobs-container {
+    padding: 35px 5%;
+  }
+
+  .job-search {
+    grid-template-columns: 1fr;
+  }
+
+  .jobs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .job-details-card h1 {
+    font-size: 26px;
+  }
+}
+
+
+/* Candidate Dashboard */
+
+.dashboard-page {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.dashboard-header {
+  padding: 65px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #eff6ff, #ffffff);
+}
+
+.dashboard-header h1 {
+  font-size: 38px;
+  margin-bottom: 12px;
+}
+
+.dashboard-header > p:last-child {
+  color: #64748b;
+  font-size: 15px;
+}
+
+.dashboard-container {
+  padding: 45px 9%;
+}
+
+.dashboard-profile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 25px;
+  border: 1px solid #e5eaf1;
+  border-radius: 12px;
+  margin-bottom: 40px;
+}
+
+.dashboard-profile h2 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.dashboard-profile p {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.role-badge {
+  padding: 7px 14px;
+  border-radius: 20px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.dashboard-section-title {
+  font-size: 23px;
+  margin-bottom: 22px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.dashboard-card {
+  background: white;
+  padding: 28px;
+  border: 1px solid #e5eaf1;
+  border-radius: 12px;
+}
+
+.dashboard-card h3 {
+  font-size: 19px;
+  margin-bottom: 14px;
+}
+
+.dashboard-card p {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+
+.coming-soon {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.nav-logout {
+  padding: 10px 16px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: none;
+  border-radius: 7px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 35px 5%;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-header h1 {
+    font-size: 30px;
+  }
+}
+.success-message {
+  color: #15803d;
+  background: #dcfce7;
+  padding: 12px;
+  border-radius: 7px;
+  font-size: 14px;
+  margin-top: 15px;
+}
+.applications-container {
+  max-width: 1000px;
+  margin: 50px auto;
+  padding: 0 24px;
+}
+
+.applications-header {
+  margin-bottom: 30px;
+}
+
+.applications-header h1 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.applications-header p {
+  color: #64748b;
+}
+
+.applications-list {
+  display: grid;
+  gap: 18px;
+}
+
+.application-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.application-card h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.application-card p {
+  color: #64748b;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.application-status {
+  padding: 7px 13px;
+  border-radius: 20px;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.application-status.reviewing {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.application-status.shortlisted {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.application-status.hired {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.application-status.rejected {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.empty-applications {
+  text-align: center;
+  padding: 50px 20px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.empty-applications p {
+  color: #64748b;
+  margin: 12px 0 24px;
+}
+
+@media (max-width: 600px) {
+  .application-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
