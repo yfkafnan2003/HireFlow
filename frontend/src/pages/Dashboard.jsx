@@ -90,7 +90,9 @@ function Dashboard() {
           <article className="dashboard-card">
             <h3>My Interviews</h3>
             <p>View and manage your upcoming interview schedule.</p>
-            <span className="coming-soon">Coming soon</span>
+            <Link to="/interviews" className="primary-btn">
+              View My Interviews
+            </Link>
           </article>
         </div>
       </section>
