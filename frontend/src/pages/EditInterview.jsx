@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { apiRequest } from "../services/api";
 
-// Convert an API date into the format required by datetime-local.
 function toLocalDateTime(value) {
   const date = new Date(value);
   const pad = (number) => String(number).padStart(2, "0");
@@ -65,6 +64,16 @@ function EditInterview() {
     const startDate = new Date(startsAt);
     const endDate = new Date(endsAt);
 
+    if (
+      !startsAt ||
+      !endsAt ||
+      Number.isNaN(startDate.getTime()) ||
+      Number.isNaN(endDate.getTime())
+    ) {
+      setError("Please enter valid interview dates and times.");
+      return;
+    }
+
     if (startDate <= new Date()) {
       setError("The interview must be scheduled for a future time.");
       return;
@@ -83,8 +92,8 @@ function EditInterview() {
         body: JSON.stringify({
           starts_at: startDate.toISOString(),
           ends_at: endDate.toISOString(),
-          meeting_link: meetingLink || null,
-          notes: notes || null,
+          meeting_link: meetingLink.trim() || null,
+          notes: notes.trim() || null,
         }),
       });
 
@@ -100,46 +109,69 @@ function EditInterview() {
     <main className="jobs-page">
       <nav>
         <h2>HireFlow</h2>
-        <Link to="/recruiter/interviews">Back to Interviews</Link>
+        <div>
+          <Link to="/recruiter/dashboard">Dashboard</Link>
+          <Link to="/recruiter/interviews">Manage Interviews</Link>
+        </div>
       </nav>
 
       <section className="applications-container">
         <div className="applications-header">
           <h1>Edit Interview</h1>
           <p>Interview #{interviewId}</p>
+          <Link to="/recruiter/interviews">← Back to Interviews</Link>
         </div>
 
-        {loading && <p>Loading interview...</p>}
-        {error && <p className="form-error">{error}</p>}
+        {loading && (
+          <p className="loading-message" role="status">
+            Loading interview...
+          </p>
+        )}
+
+        {error && (
+          <div className="error-message" role="alert">
+            <p>{error}</p>
+            <Link
+              to="/recruiter/interviews"
+              className="secondary-btn"
+            >
+              Back to Interviews
+            </Link>
+          </div>
+        )}
 
         {!loading && !error && (
           <form onSubmit={handleSubmit} className="auth-form">
-            <label>Start Date and Time</label>
+            <label htmlFor="startsAt">Start Date and Time</label>
             <input
+              id="startsAt"
               type="datetime-local"
               value={startsAt}
               onChange={(event) => setStartsAt(event.target.value)}
               required
             />
 
-            <label>End Date and Time</label>
+            <label htmlFor="endsAt">End Date and Time</label>
             <input
+              id="endsAt"
               type="datetime-local"
               value={endsAt}
               onChange={(event) => setEndsAt(event.target.value)}
               required
             />
 
-            <label>Meeting Link</label>
+            <label htmlFor="meetingLink">Meeting Link</label>
             <input
+              id="meetingLink"
               type="url"
               value={meetingLink}
               onChange={(event) => setMeetingLink(event.target.value)}
               placeholder="https://meet.google.com/..."
             />
 
-            <label>Notes</label>
+            <label htmlFor="notes">Notes</label>
             <textarea
+              id="notes"
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
               rows="4"

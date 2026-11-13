@@ -17,29 +17,48 @@ function Register() {
   const [loading, setLoading] = useState(false);
 
   function handleChange(event) {
-    setFormData({
-      ...formData,
+    setFormData((current) => ({
+      ...current,
       [event.target.name]: event.target.value,
-    });
+    }));
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
+
+    const cleanName = formData.full_name.trim();
+    const cleanEmail = formData.email.trim().toLowerCase();
+    const cleanPhone = formData.phone.trim();
+
+    if (cleanName.length < 2) {
+      setError("Full name must contain at least 2 characters.");
+      return;
+    }
+
+    if (formData.password.length < 8) {
+      setError("Password must contain at least 8 characters.");
+      return;
+    }
+
+    if (loading) return;
+
     setLoading(true);
 
     try {
       await apiRequest("/auth/register", {
         method: "POST",
         body: JSON.stringify({
-          full_name: formData.full_name,
-          email: formData.email,
+          full_name: cleanName,
+          email: cleanEmail,
           password: formData.password,
-          phone: formData.phone || null,
+          phone: cleanPhone || null,
         }),
       });
 
-      navigate("/login");
+      navigate("/login", {
+        state: { message: "Account created successfully. Please sign in." },
+      });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -48,67 +67,84 @@ function Register() {
   }
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <Link to="/" className="brand">HireFlow</Link>
+    <main className="auth-page">
+      <section className="auth-container">
+        <div className="auth-card">
+          <Link to="/" className="brand">HireFlow</Link>
 
-        <h1>Create an account</h1>
-        <p>Join HireFlow and discover opportunities</p>
+          <h1>Create an account</h1>
+          <p className="auth-subtitle">
+            Join HireFlow and discover opportunities.
+          </p>
 
-        <form onSubmit={handleSubmit}>
-          <label>Full Name</label>
-          <input
-            type="text"
-            name="full_name"
-            placeholder="Enter your full name"
-            value={formData.full_name}
-            onChange={handleChange}
-            minLength={2}
-            required
-          />
+          <form onSubmit={handleSubmit} className="auth-form">
+            <label htmlFor="full_name">Full Name</label>
+            <input
+              id="full_name"
+              type="text"
+              name="full_name"
+              placeholder="Enter your full name"
+              value={formData.full_name}
+              onChange={handleChange}
+              minLength={2}
+              maxLength={200}
+              required
+            />
 
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            placeholder="Enter your email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
 
-          <label>Phone (Optional)</label>
-          <input
-            type="tel"
-            name="phone"
-            placeholder="Enter your phone number"
-            value={formData.phone}
-            onChange={handleChange}
-          />
+            <label htmlFor="phone">Phone (Optional)</label>
+            <input
+              id="phone"
+              type="tel"
+              name="phone"
+              placeholder="Enter your phone number"
+              value={formData.phone}
+              onChange={handleChange}
+            />
 
-          <label>Password</label>
-          <input
-            type="password"
-            name="password"
-            placeholder="Minimum 8 characters"
-            value={formData.password}
-            onChange={handleChange}
-            minLength={8}
-            required
-          />
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              name="password"
+              placeholder="Minimum 8 characters"
+              value={formData.password}
+              onChange={handleChange}
+              minLength={8}
+              required
+            />
 
-          {error && <p className="form-error">{error}</p>}
+            {error && (
+              <div className="error-message" role="alert">
+                {error}
+              </div>
+            )}
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Creating Account..." : "Create Account"}
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="primary-btn auth-submit"
+              disabled={loading}
+            >
+              {loading ? "Creating Account..." : "Create Account"}
+            </button>
+          </form>
 
-        <p className="auth-footer">
-          Already have an account? <Link to="/login">Sign In</Link>
-        </p>
-      </div>
-    </div>
+          <p className="auth-footer">
+            Already have an account? <Link to="/login">Sign In</Link>
+          </p>
+        </div>
+      </section>
+    </main>
   );
 }
 

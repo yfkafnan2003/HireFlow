@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+
+import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { apiRequest } from "../services/api";
 
@@ -12,32 +13,46 @@ function Applicants() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    async function fetchApplications() {
-      try {
-        const data = await apiRequest(
-          `/applications/recruiter/jobs/${jobId}`
-        );
+  const fetchApplications = useCallback(async () => {
+    setLoading(true);
+    setError("");
 
-        setApplications(data);
+    try {
+      const data = await apiRequest(
+        `/applications/recruiter/jobs/${jobId}`
+      );
 
-        const statuses = {};
-        data.forEach((application) => {
-          statuses[application.id] = application.status;
-        });
+      setApplications(data);
 
-        setSelectedStatuses(statuses);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+      const statuses = {};
+      data.forEach((application) => {
+        statuses[application.id] = application.status;
+      });
+
+      setSelectedStatuses(statuses);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-
-    fetchApplications();
   }, [jobId]);
 
+  useEffect(() => {
+    fetchApplications();
+  }, [fetchApplications]);
+
+
   async function updateStatus(applicationId) {
+    const application = applications.find(
+      (item) => item.id === applicationId
+    );
+
+    const newStatus = selectedStatuses[applicationId];
+
+    if (!application || newStatus === application.status) {
+      return;
+    }
+
     setError("");
     setMessage("");
     setSavingId(applicationId);
@@ -48,24 +63,35 @@ function Applicants() {
         {
           method: "PATCH",
           body: JSON.stringify({
-            status: selectedStatuses[applicationId],
+            status: newStatus,
           }),
         }
       );
 
       setApplications((current) =>
-        current.map((application) =>
-          application.id === applicationId ? updated : application
+        current.map((item) =>
+          item.id === applicationId ? updated : item
         )
       );
 
+      setSelectedStatuses((current) => ({
+        ...current,
+        [applicationId]: updated.status,
+      }));
+
       setMessage(`Application #${applicationId} updated successfully.`);
     } catch (err) {
+      setSelectedStatuses((current) => ({
+        ...current,
+        [applicationId]: application.status,
+      }));
+
       setError(err.message);
     } finally {
       setSavingId(null);
     }
   }
+
 
   return (
     <main className="jobs-page">
@@ -84,11 +110,30 @@ function Applicants() {
           <Link to="/recruiter/dashboard">← Back to Dashboard</Link>
         </div>
 
-        {loading && <p>Loading applicants...</p>}
+        {loading && (
+          <p className="loading-message" role="status">
+            Loading applicants...
+          </p>
+        )}
 
-        {error && <p className="form-error">{error}</p>}
+        {error && (
+          <div className="error-message" role="alert">
+            <p>{error}</p>
+            <button
+              type="button"
+              className="secondary-btn"
+              onClick={() => window.location.reload()}
+            >
+              Try Again
+            </button>
+          </div>
+        )}
 
-        {message && <p className="success-message">{message}</p>}
+        {message && (
+          <p className="success-message" role="status">
+            {message}
+          </p>
+        )}
 
         {!loading && !error && applications.length === 0 && (
           <div className="empty-applications">
@@ -97,7 +142,7 @@ function Applicants() {
           </div>
         )}
 
-        {!loading && applications.length > 0 && (
+        {!loading && !error && applications.length > 0 && (
           <div className="applications-list">
             {applications.map((application) => (
               <article className="application-card" key={application.id}>
@@ -115,13 +160,17 @@ function Applicants() {
 
                   <select
                     id={`status-${application.id}`}
-                    value={selectedStatuses[application.id] || application.status}
-                    onChange={(event) =>
+                    value={
+                      selectedStatuses[application.id] || application.status
+                    }
+                    disabled={savingId !== null}
+                    onChange={(event) => {
                       setSelectedStatuses((current) => ({
                         ...current,
                         [application.id]: event.target.value,
-                      }))
-                    }
+                      }));
+                      setMessage("");
+                    }}
                   >
                     <option value="reviewing">Reviewing</option>
                     <option value="shortlisted">Shortlisted</option>
@@ -133,7 +182,7 @@ function Applicants() {
                     className="primary-btn"
                     onClick={() => updateStatus(application.id)}
                     disabled={
-                      savingId === application.id ||
+                      savingId !== null ||
                       selectedStatuses[application.id] === application.status
                     }
                   >
@@ -141,14 +190,15 @@ function Applicants() {
                       ? "Saving..."
                       : "Update Status"}
                   </button>
+
                   {application.status === "shortlisted" && (
                     <Link
-                        to={`/recruiter/applications/${application.id}/interview/new`}
-                        className="primary-btn"
+                      to={`/recruiter/applications/${application.id}/interview/new`}
+                      className="primary-btn"
                     >
-                        Schedule Interview
+                      Schedule Interview
                     </Link>
-                    )}
+                  )}
                 </div>
 
                 <span

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { apiRequest } from "../services/api";
@@ -17,12 +18,15 @@ function EditJob() {
 
   useEffect(() => {
     async function fetchJob() {
+      setLoading(true);
+      setError("");
+
       try {
         const data = await apiRequest("/jobs/my-jobs");
         const job = data.find((item) => item.id === Number(jobId));
 
         if (!job) {
-          throw new Error("Job not found");
+          throw new Error("Job not found.");
         }
 
         setTitle(job.title);
@@ -41,17 +45,33 @@ function EditJob() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    setError("");
+
+    const cleanTitle = title.trim();
+    const cleanDescription = description.trim();
+    const cleanLocation = location.trim();
+
+    if (cleanTitle.length < 3) {
+      setError("Job title must contain at least 3 characters.");
+      return;
+    }
+
+    if (cleanDescription.length < 10) {
+      setError("Job description must contain at least 10 characters.");
+      return;
+    }
+
+    if (saving) return;
 
     setSaving(true);
-    setError("");
 
     try {
       await apiRequest(`/jobs/${jobId}`, {
         method: "PATCH",
         body: JSON.stringify({
-          title,
-          description,
-          location: location || null,
+          title: cleanTitle,
+          description: cleanDescription,
+          location: cleanLocation || null,
           status: jobStatus,
         }),
       });
@@ -64,17 +84,13 @@ function EditJob() {
     }
   }
 
-  if (loading) {
-    return <p>Loading job...</p>;
-  }
-
   return (
     <main className="auth-page">
       <nav>
         <h2>HireFlow</h2>
         <div>
           <Link to="/recruiter/dashboard">Dashboard</Link>
-          <Link to="/jobs">Browse Jobs</Link>
+          <Link to="/recruiter/interviews">Manage Interviews</Link>
         </div>
       </nav>
 
@@ -86,51 +102,77 @@ function EditJob() {
             Update your job posting details.
           </p>
 
-          {error && <p className="form-error">{error}</p>}
+          {loading && (
+            <p className="loading-message" role="status">
+              Loading job details...
+            </p>
+          )}
 
-          <form onSubmit={handleSubmit}>
-            <label>Job Title</label>
-            <input
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              minLength={3}
-              maxLength={200}
-              required
-            />
+          {error && (
+            <div className="error-message" role="alert">
+              <p>{error}</p>
+              {!loading && (
+                <Link
+                  to="/recruiter/dashboard"
+                  className="secondary-btn"
+                >
+                  Back to Dashboard
+                </Link>
+              )}
+            </div>
+          )}
 
-            <label>Location</label>
-            <input
-              value={location}
-              onChange={(event) => setLocation(event.target.value)}
-              maxLength={150}
-            />
+          {!loading && !error && (
+            <form onSubmit={handleSubmit} className="auth-form">
+              <label htmlFor="title">Job Title</label>
+              <input
+                id="title"
+                type="text"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                minLength={3}
+                maxLength={200}
+                required
+              />
 
-            <label>Job Description</label>
-            <textarea
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              minLength={10}
-              rows={7}
-              required
-            />
+              <label htmlFor="location">Location</label>
+              <input
+                id="location"
+                type="text"
+                value={location}
+                onChange={(event) => setLocation(event.target.value)}
+                maxLength={150}
+              />
 
-            <label>Job Status</label>
-            <select
-              value={jobStatus}
-              onChange={(event) => setJobStatus(event.target.value)}
-            >
-              <option value="open">Open</option>
-              <option value="closed">Closed</option>
-            </select>
+              <label htmlFor="description">Job Description</label>
+              <textarea
+                id="description"
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                minLength={10}
+                rows={7}
+                required
+              />
 
-            <button
-              type="submit"
-              className="primary-btn auth-submit"
-              disabled={saving}
-            >
-              {saving ? "Saving..." : "Save Changes"}
-            </button>
-          </form>
+              <label htmlFor="jobStatus">Job Status</label>
+              <select
+                id="jobStatus"
+                value={jobStatus}
+                onChange={(event) => setJobStatus(event.target.value)}
+              >
+                <option value="open">Open</option>
+                <option value="closed">Closed</option>
+              </select>
+
+              <button
+                type="submit"
+                className="primary-btn auth-submit"
+                disabled={saving}
+              >
+                {saving ? "Saving..." : "Save Changes"}
+              </button>
+            </form>
+          )}
         </div>
       </section>
     </main>

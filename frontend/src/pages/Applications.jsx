@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { apiRequest } from "../services/api";
@@ -7,18 +8,21 @@ function Applications() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function fetchApplications() {
-      try {
-        const data = await apiRequest("/applications/me");
-        setApplications(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
+  async function fetchApplications() {
+    setLoading(true);
+    setError("");
 
+    try {
+      const data = await apiRequest("/applications/me");
+      setApplications(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
     fetchApplications();
   }, []);
 
@@ -27,7 +31,6 @@ function Applications() {
       <nav>
         <h2>HireFlow</h2>
         <div>
-          <Link to="/">Home</Link>
           <Link to="/dashboard">Dashboard</Link>
           <Link to="/jobs">Browse Jobs</Link>
         </div>
@@ -39,9 +42,24 @@ function Applications() {
           <p>Track the status of the jobs you have applied for.</p>
         </div>
 
-        {loading && <p>Loading your applications...</p>}
+        {loading && (
+          <p className="loading-message" role="status">
+            Loading your applications...
+          </p>
+        )}
 
-        {error && <p className="form-error">{error}</p>}
+        {error && (
+          <div className="error-message" role="alert">
+            <p>{error}</p>
+            <button
+              type="button"
+              className="secondary-btn"
+              onClick={fetchApplications}
+            >
+              Try Again
+            </button>
+          </div>
+        )}
 
         {!loading && !error && applications.length === 0 && (
           <div className="empty-applications">

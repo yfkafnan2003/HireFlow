@@ -717,3 +717,284 @@ footer {
     width: 100%;
   }
 }
+
+
+/* Responsive Design Improvements */
+
+/* Tablet and smaller screens */
+@media (max-width: 768px) {
+  nav {
+    height: auto;
+    min-height: 70px;
+    padding: 16px 5%;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  nav div {
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  nav a {
+    font-size: 13px;
+  }
+
+  .hero {
+    min-height: auto;
+    padding: 75px 20px;
+  }
+
+  .jobs-header,
+  .dashboard-header {
+    padding: 50px 20px;
+  }
+
+  .dashboard-profile {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .applications-container {
+    margin: 35px auto;
+    padding: 0 5%;
+  }
+
+  .application-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .application-card > div {
+    max-width: 100%;
+  }
+
+  .auth-card {
+    padding: 30px 24px;
+  }
+}
+
+/* Mobile phones */
+@media (max-width: 480px) {
+  nav {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  nav div {
+    width: 100%;
+    gap: 12px;
+  }
+
+  nav a:last-child {
+    padding: 9px 12px;
+  }
+
+  .hero h1 {
+    font-size: 34px;
+    letter-spacing: -1px;
+  }
+
+  .hero-buttons {
+    width: 100%;
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .jobs-container,
+  .dashboard-container {
+    padding: 30px 5%;
+  }
+
+  .job-card,
+  .job-details-card,
+  .dashboard-card,
+  .application-card {
+    padding: 20px;
+  }
+
+  .applications-header h1 {
+    font-size: 26px;
+  }
+
+  .recruiter-job-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .recruiter-job-actions a,
+  .application-card button,
+  .application-card a {
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 25px;
+  }
+}
+
+/* Better button interaction */
+button,
+.primary-btn,
+.secondary-btn {
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Better form behavior */
+input,
+textarea,
+select {
+  max-width: 100%;
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* Prevent horizontal overflow */
+body {
+  overflow-x: hidden;
+}
+
+/* Consistent UI Styling */
+
+/* Buttons */
+.primary-btn,
+.secondary-btn,
+button {
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.primary-btn {
+  background: #2563eb;
+  color: white;
+  border: 1px solid #2563eb;
+}
+
+.primary-btn:hover {
+  background: #1d4ed8;
+}
+
+.secondary-btn {
+  background: white;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+}
+
+.secondary-btn:hover {
+  background: #eff6ff;
+}
+
+/* Form styling */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-form label,
+.auth-card form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.auth-form input,
+.auth-form textarea,
+.auth-form select,
+.auth-card form input,
+.auth-card form textarea,
+.auth-card form select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font: inherit;
+  background: white;
+  color: #111827;
+}
+
+.auth-form input:focus,
+.auth-form textarea:focus,
+.auth-form select:focus,
+.auth-card form input:focus,
+.auth-card form textarea:focus,
+.auth-card form select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* Consistent cards */
+.job-card,
+.job-details-card,
+.dashboard-card,
+.application-card {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Better links */
+a {
+  transition: color 0.2s ease;
+}
+
+/* Keyboard accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}
+
+
+/* Loading and Error Messages */
+
+.loading-message {
+  text-align: center;
+  padding: 30px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 18px;
+  border-radius: 10px;
+  margin: 20px 0;
+}
+
+.error-message button {
+  margin-top: 10px;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.brand-link {
+  color: #2563eb;
+  font-size: 24px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.brand-link:hover {
+  color: #1d4ed8;
+}

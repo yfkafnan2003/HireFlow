@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiRequest } from "../services/api";
@@ -14,17 +15,33 @@ function CreateJob() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-
     setError("");
+
+    const cleanTitle = title.trim();
+    const cleanDescription = description.trim();
+    const cleanLocation = location.trim();
+
+    if (cleanTitle.length < 3) {
+      setError("Job title must contain at least 3 characters.");
+      return;
+    }
+
+    if (cleanDescription.length < 10) {
+      setError("Job description must contain at least 10 characters.");
+      return;
+    }
+
+    if (loading) return;
+
     setLoading(true);
 
     try {
       await apiRequest("/jobs", {
         method: "POST",
         body: JSON.stringify({
-          title,
-          description,
-          location: location || null,
+          title: cleanTitle,
+          description: cleanDescription,
+          location: cleanLocation || null,
         }),
       });
 
@@ -42,7 +59,7 @@ function CreateJob() {
         <h2>HireFlow</h2>
         <div>
           <Link to="/recruiter/dashboard">Dashboard</Link>
-          <Link to="/jobs">Browse Jobs</Link>
+          <Link to="/recruiter/interviews">Manage Interviews</Link>
         </div>
       </nav>
 
@@ -54,9 +71,10 @@ function CreateJob() {
             Publish a new opportunity for candidates.
           </p>
 
-          <form onSubmit={handleSubmit}>
-            <label>Job Title</label>
+          <form onSubmit={handleSubmit} className="auth-form">
+            <label htmlFor="title">Job Title</label>
             <input
+              id="title"
               type="text"
               placeholder="e.g. Junior Python Developer"
               value={title}
@@ -66,8 +84,9 @@ function CreateJob() {
               required
             />
 
-            <label>Location</label>
+            <label htmlFor="location">Location</label>
             <input
+              id="location"
               type="text"
               placeholder="e.g. Dhaka, Bangladesh"
               value={location}
@@ -75,8 +94,9 @@ function CreateJob() {
               maxLength={150}
             />
 
-            <label>Job Description</label>
+            <label htmlFor="description">Job Description</label>
             <textarea
+              id="description"
               placeholder="Describe the responsibilities and requirements..."
               value={description}
               onChange={(event) => setDescription(event.target.value)}
@@ -85,14 +105,18 @@ function CreateJob() {
               required
             />
 
-            {error && <p className="form-error">{error}</p>}
+            {error && (
+              <div className="error-message" role="alert">
+                {error}
+              </div>
+            )}
 
             <button
               type="submit"
               className="primary-btn auth-submit"
               disabled={loading}
             >
-              {loading ? "Creating..." : "Publish Job"}
+              {loading ? "Publishing..." : "Publish Job"}
             </button>
           </form>
         </div>

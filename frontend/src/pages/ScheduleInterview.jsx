@@ -20,7 +20,30 @@ function ScheduleInterview() {
     event.preventDefault();
     setError("");
 
-    if (new Date(endsAt) <= new Date(startsAt)) {
+    const startDate = new Date(startsAt);
+    const endDate = new Date(endsAt);
+
+    if (!interviewerId || Number(interviewerId) < 1) {
+      setError("Please enter a valid interviewer user ID.");
+      return;
+    }
+
+    if (
+      !startsAt ||
+      !endsAt ||
+      Number.isNaN(startDate.getTime()) ||
+      Number.isNaN(endDate.getTime())
+    ) {
+      setError("Please enter valid interview dates and times.");
+      return;
+    }
+
+    if (startDate <= new Date()) {
+      setError("The interview must be scheduled for a future time.");
+      return;
+    }
+
+    if (endDate <= startDate) {
       setError("End time must be after start time.");
       return;
     }
@@ -33,10 +56,10 @@ function ScheduleInterview() {
         body: JSON.stringify({
           application_id: Number(applicationId),
           interviewer_id: Number(interviewerId),
-          starts_at: new Date(startsAt).toISOString(),
-          ends_at: new Date(endsAt).toISOString(),
-          meeting_link: meetingLink || null,
-          notes: notes || null,
+          starts_at: startDate.toISOString(),
+          ends_at: endDate.toISOString(),
+          meeting_link: meetingLink.trim() || null,
+          notes: notes.trim() || null,
         }),
       });
 
@@ -52,7 +75,10 @@ function ScheduleInterview() {
     <main className="jobs-page">
       <nav>
         <h2>HireFlow</h2>
-        <Link to="/recruiter/dashboard">Dashboard</Link>
+        <div>
+          <Link to="/recruiter/dashboard">Dashboard</Link>
+          <Link to="/recruiter/interviews">Manage Interviews</Link>
+        </div>
       </nav>
 
       <section className="applications-container">
@@ -61,11 +87,16 @@ function ScheduleInterview() {
           <p>For Application #{applicationId}</p>
         </div>
 
-        {error && <p className="form-error">{error}</p>}
+        {error && (
+          <div className="error-message" role="alert">
+            <p>{error}</p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="auth-form">
-          <label>Interviewer User ID</label>
+          <label htmlFor="interviewerId">Interviewer User ID</label>
           <input
+            id="interviewerId"
             type="number"
             min="1"
             value={interviewerId}
@@ -74,32 +105,36 @@ function ScheduleInterview() {
             required
           />
 
-          <label>Start Date and Time</label>
+          <label htmlFor="startsAt">Start Date and Time</label>
           <input
+            id="startsAt"
             type="datetime-local"
             value={startsAt}
             onChange={(event) => setStartsAt(event.target.value)}
             required
           />
 
-          <label>End Date and Time</label>
+          <label htmlFor="endsAt">End Date and Time</label>
           <input
+            id="endsAt"
             type="datetime-local"
             value={endsAt}
             onChange={(event) => setEndsAt(event.target.value)}
             required
           />
 
-          <label>Meeting Link (Optional)</label>
+          <label htmlFor="meetingLink">Meeting Link (Optional)</label>
           <input
+            id="meetingLink"
             type="url"
             value={meetingLink}
             onChange={(event) => setMeetingLink(event.target.value)}
             placeholder="https://meet.google.com/..."
           />
 
-          <label>Notes (Optional)</label>
+          <label htmlFor="notes">Notes (Optional)</label>
           <textarea
+            id="notes"
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
             placeholder="Interview instructions or notes"

@@ -41,9 +41,24 @@ function JobDetails() {
           ← Back to Jobs
         </Link>
 
-        {loading && <p>Loading job details...</p>}
+        {loading && (
+          <p className="loading-message" role="status">
+            Loading job details...
+          </p>
+        )}
 
-        {error && <p className="form-error">{error}</p>}
+        {error && (
+          <div className="error-message" role="alert">
+            <p>{error}</p>
+            <button
+              type="button"
+              className="secondary-btn"
+              onClick={() => window.location.reload()}
+            >
+              Try Again
+            </button>
+          </div>
+        )}
 
         {!loading && !error && job && (
           <article className="job-details-card">
@@ -66,38 +81,40 @@ function JobDetails() {
             </p>
 
             <button
-            className="primary-btn"
-            onClick={async () => {
+              className="primary-btn"
+              onClick={async () => {
                 setApplicationMessage("");
                 setError("");
 
                 if (!localStorage.getItem("access_token")) {
-                navigate("/login");
-                return;
+                  navigate("/login");
+                  return;
                 }
 
                 try {
-                setApplying(true);
+                  setApplying(true);
 
-                await apiRequest("/applications", {
+                  await apiRequest("/applications", {
                     method: "POST",
                     body: JSON.stringify({ job_id: job.id }),
-                });
+                  });
 
-                setApplicationMessage("Application submitted successfully!");
+                  setApplicationMessage("Application submitted successfully!");
                 } catch (err) {
-                setError(err.message);
+                  setError(err.message);
                 } finally {
-                setApplying(false);
+                  setApplying(false);
                 }
-            }}
-            disabled={applying || !!applicationMessage}
+              }}
+              disabled={applying || !!applicationMessage || job.status !== "open"}
             >
-            {applying
-                ? "Applying..."
+              {applying
+                ? "Submitting Application..."
                 : applicationMessage
-                ? "Applied"
-                : "Apply for This Job"}
+                  ? "Applied"
+                  : job.status !== "open"
+                    ? "Applications Closed"
+                    : "Apply for This Job"}
             </button>
 
             {applicationMessage && (

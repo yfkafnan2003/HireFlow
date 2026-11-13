@@ -8,21 +8,32 @@ function Dashboard() {
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    async function fetchUser() {
+    async function fetchDashboard() {
       try {
-        const data = await apiRequest("/auth/me");
-        setUser(data);
-      } catch {
-        localStorage.removeItem("access_token");
-        navigate("/login");
+        const userData = await apiRequest("/auth/me");
+
+        if (userData.role === "recruiter") {
+          navigate("/recruiter/dashboard");
+          return;
+        }
+
+        if (userData.role === "interviewer") {
+          navigate("/interviews");
+          return;
+        }
+
+        setUser(userData);
+      } catch (err) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchUser();
+    fetchDashboard();
   }, [navigate]);
 
   function handleLogout() {
@@ -31,25 +42,43 @@ function Dashboard() {
   }
 
   if (loading) {
-    return <p>Loading dashboard...</p>;
+    return (
+      <p className="loading-message" role="status">
+        Loading candidate dashboard...
+      </p>
+    );
   }
 
-  if (!user) {
-    return null;
+  if (error) {
+    return (
+      <div className="error-message" role="alert">
+        <p>{error}</p>
+        <button className="secondary-btn" onClick={() => window.location.reload()}>
+          Try Again
+        </button>
+        <button className="secondary-btn" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
+    );
   }
+
+  if (!user) return null;
 
   return (
     <main className="dashboard-page">
       <nav>
-        <h2>HireFlow</h2>
-
-        <div>
-          <Link to="/">Home</Link>
-          <Link to="/jobs">Browse Jobs</Link>
-          <button className="nav-logout" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
+        <Link to="/dashboard" className="brand-link">
+          HireFlow
+        </Link>
+          <div>
+            <Link to="/jobs">Browse Jobs</Link>
+            <Link to="/applications">My Applications</Link>
+            <Link to="/interviews">My Interviews</Link>
+            <button className="nav-logout" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
       </nav>
 
       <section className="dashboard-header">
@@ -89,7 +118,7 @@ function Dashboard() {
 
           <article className="dashboard-card">
             <h3>My Interviews</h3>
-            <p>View and manage your upcoming interview schedule.</p>
+            <p>View your upcoming and past interview schedule.</p>
             <Link to="/interviews" className="primary-btn">
               View My Interviews
             </Link>

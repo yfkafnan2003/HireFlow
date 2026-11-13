@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiRequest } from "../services/api";
@@ -10,23 +11,35 @@ function RecruiterDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function fetchDashboard() {
-      try {
-        const [userData, jobsData] = await Promise.all([
-          apiRequest("/auth/me"),
-          apiRequest("/jobs/my-jobs"),
-        ]);
+  async function fetchDashboard() {
+    setLoading(true);
+    setError("");
 
-        setUser(userData);
-        setJobs(jobsData);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+    try {
+      const [userData, jobsData] = await Promise.all([
+        apiRequest("/auth/me"),
+        apiRequest("/jobs/my-jobs"),
+      ]);
+
+      if (userData.role !== "recruiter") {
+        navigate(
+          userData.role === "interviewer"
+            ? "/interviews"
+            : "/dashboard"
+        );
+        return;
       }
-    }
 
+      setUser(userData);
+      setJobs(jobsData);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
     fetchDashboard();
   }, []);
 
@@ -36,23 +49,44 @@ function RecruiterDashboard() {
   }
 
   if (loading) {
-    return <p>Loading recruiter dashboard...</p>;
+    return (
+      <p className="loading-message" role="status">
+        Loading recruiter dashboard...
+      </p>
+    );
   }
 
   if (error) {
-    return <p className="form-error">{error}</p>;
+    return (
+      <div className="error-message" role="alert">
+        <p>{error}</p>
+        <button className="secondary-btn" onClick={fetchDashboard}>
+          Try Again
+        </button>
+        <button className="secondary-btn" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
+    );
   }
+
+  if (!user) return null;
 
   return (
     <main className="dashboard-page">
-    <nav>
-    <h2>HireFlow</h2>
-    <div>
-        <Link to="/dashboard">Dashboard</Link>
-        <Link to="/jobs">Browse Jobs</Link>
-        <Link to="/recruiter/interviews">Manage Interviews</Link>
-    </div>
-    </nav>
+      <nav>
+        <Link to="/recruiter/dashboard" className="brand-link">
+          HireFlow
+        </Link>
+        <div>
+          <a href="#my-jobs">My Jobs</a>
+          <Link to="/recruiter/interviews">Manage Interviews</Link>
+          <button className="nav-logout" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      </nav>
+
       <section className="dashboard-header">
         <p className="tagline">RECRUITER DASHBOARD</p>
         <h1>Welcome back!</h1>
@@ -65,7 +99,6 @@ function RecruiterDashboard() {
             <h2>{user.email}</h2>
             <p>Account ID: {user.id}</p>
           </div>
-
           <span className="role-badge">{user.role}</span>
         </div>
 
@@ -90,7 +123,7 @@ function RecruiterDashboard() {
           </article>
         </div>
 
-        <div className="recruiter-jobs-header">
+        <div className="recruiter-jobs-header" id="my-jobs">
           <h2>My Job Postings</h2>
           <Link to="/recruiter/jobs/new" className="primary-btn">
             + Create Job
@@ -115,22 +148,23 @@ function RecruiterDashboard() {
                 </div>
 
                 <div className="recruiter-job-actions">
-                <Link
-                to={`/recruiter/jobs/${job.id}/applicants`}
-                className="primary-btn"
-                >
-                View Applicants
-                </Link>
-                <span className={`application-status ${job.status}`}>
-                    {job.status}
-                </span>
+                  <Link
+                    to={`/recruiter/jobs/${job.id}/applicants`}
+                    className="primary-btn"
+                  >
+                    View Applicants
+                  </Link>
 
-                <Link
+                  <span className={`application-status ${job.status}`}>
+                    {job.status}
+                  </span>
+
+                  <Link
                     to={`/recruiter/jobs/${job.id}/edit`}
                     className="primary-btn"
-                >
+                  >
                     Edit
-                </Link>
+                  </Link>
                 </div>
               </article>
             ))}

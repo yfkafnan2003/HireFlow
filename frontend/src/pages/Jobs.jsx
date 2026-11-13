@@ -52,7 +52,6 @@ function Jobs() {
         <h2>HireFlow</h2>
 
         <div>
-          <Link to="/">Home</Link>
           <Link to="/dashboard">Dashboard</Link>
         </div>
       </nav>
@@ -78,13 +77,29 @@ function Jobs() {
             onChange={(event) => setLocation(event.target.value)}
           />
 
-          <button type="submit">Search Jobs</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Searching..." : "Search Jobs"}
+          </button>
         </form>
 
-        {loading && <p>Loading jobs...</p>}
+        {loading && (
+        <p className="loading-message" role="status">
+            Loading jobs...
+        </p>
+        )}
 
-        {error && <p className="form-error">{error}</p>}
-
+        {error && (
+        <div className="error-message" role="alert">
+            <p>{error}</p>
+            <button
+            type="button"
+            className="secondary-btn"
+            onClick={fetchJobs}
+            >
+            Try Again
+            </button>
+        </div>
+        )}
         {!loading && !error && jobs.length === 0 && (
           <p className="empty-jobs">No open jobs found.</p>
         )}

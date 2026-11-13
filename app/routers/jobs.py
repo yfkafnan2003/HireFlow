@@ -92,6 +92,18 @@ def list_jobs(
 
     return db.scalars(statement).all()
 
+@router.get("/my-jobs", response_model=list[JobResponse])
+def get_my_jobs(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("recruiter")),
+):
+    statement = (
+        select(Job)
+        .where(Job.recruiter_id == current_user.id)
+        .order_by(Job.created_at.desc(), Job.id.desc())
+    )
+
+    return db.scalars(statement).all()
 
 @router.get("/{job_id}", response_model=JobResponse)
 def get_job(
